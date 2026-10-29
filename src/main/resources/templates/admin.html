@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Admin</title>
+    <link href="/css/style.css" rel="stylesheet"/>
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
+</head>
+<body>
+<div class="app-layout">
+    <aside class="sidebar"><a class="brand" href="/login"><span class="brand-logo">📚</span><span>Resurse Digitale<small>Campus digital</small></span></a><span
+            class="nav-label">NAVIGARE</span>
+        <nav class="nav-links"><a class="" th:if="${session.user != null and session.user.role == 'STUDENT'}"
+                                  href="/student"><span class="ico">🎓</span>Student</a><a class=""
+                                                                                          th:if="${session.user != null and session.user.role == 'PROFESOR'}"
+                                                                                          href="/profesor"><span
+                class="ico">📚</span>Profesor</a><a class="active"
+                                                   th:if="${session.user != null and session.user.role == 'ADMIN'}"
+                                                   href="/admin"><span class="ico">▦</span>Administrare</a><a class=""
+                                                                                                              th:if="${session.user != null and session.user.role == 'ADMIN'}"
+                                                                                                              href="/admin/university-stats"><span
+                class="ico">📈</span>Statistici</a><a class=""
+                                                     th:if="${session.user != null and session.user.role == 'AUDIT'}"
+                                                     href="/audit"><span class="ico">◷</span>Audit</a></nav>
+        <div class="sidebar-foot">Organizează. Învață. Evoluează.<a href="/login">↗ Schimbă contul</a></div>
+    </aside>
+    <main class="main">
+        <header class="topbar">
+            <div>
+                <button aria-label="Deschide meniul" class="mobile-toggle" type="button">☰</button>
+                <span class="breadcrumb">Campus digital / Panou de control</span></div>
+            <div class="topbar-right"><span>Platformă universitară</span>
+                <div class="avatar">RD</div>
+            </div>
+        </header>
+        <section class="page-hero">
+            <div><span class="eyebrow">RESURSE DIGITALE</span>
+                <h1>Administrare platformă</h1>
+                <p>Gestionează utilizatorii, resursele și cererile într-un singur loc.</p></div>
+            <span aria-hidden="true" class="hero-icon">✦</span></section>
+        <div class="container panel">
+            <h2>Admin - Gestionare utilizatori</h2>
+            <table border="1">
+                <tr>
+                    <th>Email</th>
+                    <th>Rol</th>
+                    <th>Schimba rol</th>
+                </tr>
+                <tr th:each="user : ${users}">
+                    <td th:text="${user.email}"></td>
+                    <td th:text="${user.role}"></td>
+                    <td>
+                        <form action="/admin/update-role" method="post">
+                            <input name="id" th:value="${user.id}" type="hidden"/>
+                            <select name="role">
+                                <option value="STUDENT">Student</option>
+                                <option value="PROFESOR">Profesor</option>
+                                <option value="ADMIN">Admin</option>
+                                <option value="AUDIT">Audit</option>
+                            </select>
+                            <button type="submit">Update</button>
+                        </form>
+                    </td>
+                </tr>
+            </table>
+            <h3>Distribuie token-uri</h3>
+            <form action="/admin/add-tokens" method="post">
+                <input name="studentId" placeholder="ID student" required="" type="number"/>
+                <input name="courseId" placeholder="ID curs" required="" type="number"/>
+                <input name="tokens" placeholder="Token-uri" required="" type="number"/>
+                <button type="submit">Adauga token-uri</button>
+            </form>
+            <h3>Trimite credențiale abonament</h3>
+
+            <form action="/admin/send-credentials"
+                  method="post"
+                  autocomplete="off">
+
+                <input type="number"
+                       name="studentId"
+                       placeholder="ID student"
+                       min="1"
+                       required>
+
+                <input type="number"
+                       name="courseId"
+                       placeholder="ID curs"
+                       min="1"
+                       required>
+
+                <input type="text"
+                       name="username"
+                       placeholder="Username abonament"
+                       autocomplete="off"
+                       required>
+
+                <input type="password"
+                       name="password"
+                       placeholder="Parola abonamentului"
+                       autocomplete="new-password"
+                       required>
+
+                <button type="submit">Trimite</button>
+            </form>
+
+            <h3>Distribuie token-uri profesor</h3>
+            <form action="/admin/assign-professor-tokens" method="post">
+                <input name="professorId" placeholder="ID profesor" required="" type="number"/>
+                <input name="tokens" placeholder="Token-uri" required="" type="number"/>
+                <button type="submit">Trimite</button>
+            </form>
+            <h3>Cereri token-uri de la profesori</h3>
+            <table th:if="${profRequests.size() &gt; 0}">
+                <tr>
+                    <th>ID Profesor</th>
+                    <th>Token-uri cerute</th>
+                    <th>Status</th>
+                    <th>Actiune</th>
+                </tr>
+                <tr th:each="req : ${profRequests}">
+                    <td th:text="${req.professorId}"></td>
+                    <td th:text="${req.tokensRequested}"></td>
+                    <td th:text="${req.approved ? 'Aprobata' : 'In asteptare'}"></td>
+                    <td>
+                        <form action="/admin/approve-prof-request" method="post" th:if="${!req.approved}">
+                            <input name="id" th:value="${req.id}" type="hidden"/>
+                            <button type="submit">Aproba</button>
+                        </form>
+                    </td>
+                </tr>
+            </table>
+            <h3>Cereri studenti care depasesc resursele profesorului</h3>
+            <table th:if="${adminStudentRequests.size() &gt; 0}">
+                <tr>
+                    <th>ID Student</th>
+                    <th>ID Curs</th>
+                    <th>Token-uri cerute</th>
+                    <th>Cereri ajutor</th>
+                    <th>Actiune</th>
+                </tr>
+                <tr th:each="req : ${adminStudentRequests}">
+                    <td th:text="${req.studentId}"></td>
+                    <td th:text="${req.courseId}"></td>
+                    <td th:text="${req.requestedTokens}"></td>
+                    <td th:text="${req.requestedHelpRequests}"></td>
+                    <td>
+                        <form action="/admin/approve-student-request" method="post">
+                            <input name="requestId" th:value="${req.id}" type="hidden"/>
+                            <button type="submit">Aproba cererea</button>
+                        </form>
+                    </td>
+                </tr>
+            </table>
+            <p th:if="${adminStudentRequests.size() == 0}">
+                Nu exista cereri de la studenti pentru admin.
+            </p>
+            <p th:if="${profRequests.size() == 0}">
+                Nu exista cereri de la profesori.
+            </p>
+            <h3>Statistici student</h3>
+            <form action="/admin/student-stats" method="get">
+                <input name="studentId" placeholder="ID student" required="" type="number"/>
+                <button type="submit">Vezi statistici student</button>
+            </form>
+            <h3>Statistici curs</h3>
+            <form action="/admin/course-stats" method="get">
+                <input name="courseId" placeholder="ID curs" required="" type="number"/>
+                <button type="submit">Vezi statistici curs</button>
+            </form>
+            <h3>Statistici universitate</h3>
+            <form action="/admin/university-stats" method="get">
+                <button type="submit">Vezi statistici universitate</button>
+            </form>
+            <br/>
+            <a href="/login">Logout</a>
+        </div>
+    </main>
+</div>
+<script defer="True" src="/js/site.js"></script>
+</body>
+</html>

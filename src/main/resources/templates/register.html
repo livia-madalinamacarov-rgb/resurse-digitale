@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Inregistrare</title>
+    <link href="/css/style.css" rel="stylesheet"/>
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
+</head>
+<body>
+<div class="auth-page">
+    <aside class="auth-aside"><a class="brand" href="/login"><span
+            class="brand-logo">✦</span><span>Resurse Digitale<small>Campus digital</small></span></a>
+        <div class="auth-promo"><h1>Educația ta,<br/>mai conectată.</h1>
+            <p>Cursuri, resurse și instrumente digitale, toate într-un singur loc.</p></div>
+        <small class="auth-caption">Platformă pentru comunitatea universitară</small></aside>
+    <main class="auth-main">
+        <div class="auth-card">
+            <div class="auth-tag">BUN VENIT</div>
+            <h2>Creează un cont</h2>
+            <p class="hint">Completează formularul pentru a începe.</p>
+
+            <form action="/register" class="auth-form" method="post">
+                <input name="name" placeholder="Nume" type="text"/><br/><br/>
+                <input name="email" placeholder="Email" type="email"/><br/><br/>
+                <input name="password" placeholder="Parola" type="password"/><br/><br/>
+                <br/><br/>
+                <button type="submit">Creeaza cont</button>
+            </form>
+            <a href="/login">Ai deja cont? Login</a>
+        </div>
+    </main>
+</div>
+</body>
+</html>

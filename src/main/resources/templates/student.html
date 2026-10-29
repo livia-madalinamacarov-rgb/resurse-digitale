@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Student</title>
+    <link href="/css/style.css" rel="stylesheet"/>
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
+</head>
+<body>
+<div class="app-layout">
+    <aside class="sidebar"><a class="brand" href="/login"><span class="brand-logo">📚</span><span>Resurse Digitale<small>Campus digital</small></span></a><span
+            class="nav-label">NAVIGARE</span>
+        <nav class="nav-links"><a class="active" th:if="${session.user != null and session.user.role == 'STUDENT'}"
+                                  href="/student"><span class="ico">🎓</span>Student</a><a class=""
+                                                                                          th:if="${session.user != null and session.user.role == 'PROFESOR'}"
+                                                                                          href="/profesor"><span
+                class="ico">📚</span>Profesor</a><a class=""
+                                                   th:if="${session.user != null and session.user.role == 'ADMIN'}"
+                                                   href="/admin"><span class="ico">▦</span>Administrare</a><a class=""
+                                                                                                              th:if="${session.user != null and session.user.role == 'ADMIN'}"
+                                                                                                              href="/admin/university-stats"><span
+                class="ico">📈</span>Statistici</a><a class=""
+                                                     th:if="${session.user != null and session.user.role == 'AUDIT'}"
+                                                     href="/audit"><span class="ico">◷</span>Audit</a></nav>
+        <div class="sidebar-foot">Organizează. Învață. Evoluează.<a href="/login">↗ Schimbă contul</a></div>
+    </aside>
+    <main class="main">
+        <header class="topbar">
+            <div>
+                <button aria-label="Deschide meniul" class="mobile-toggle" type="button">☰</button>
+                <span class="breadcrumb">Campus digital / Panou de control</span></div>
+            <div class="topbar-right"><span>Platformă universitară</span>
+                <div class="avatar">RD</div>
+            </div>
+        </header>
+        <section class="page-hero">
+            <div><span class="eyebrow">RESURSE DIGITALE</span>
+                <h1>Spațiul studentului</h1>
+                <p>Gestionează cursurile, activitățile și resursele tale digitale.</p></div>
+            <span aria-hidden="true" class="hero-icon">✦</span></section>
+        <section class="kpis">
+            <div class="kpi">
+                <div class="kpi-icon">📚</div>
+                <strong th:text="${enrolledCourses.size()}">0</strong><span>Cursuri în desfășurare</span></div>
+            <div class="kpi">
+                <div class="kpi-icon">🔎</div>
+                <strong th:text="${availableCourses.size()}">0</strong><span>Cursuri disponibile</span></div>
+            <div class="kpi">
+                <div class="kpi-icon">✨</div>
+                <strong>24/7</strong><span>Acces la platformă</span></div>
+        </section>
+        <div class="container panel">
+            <h2>Pagina Student</h2>
+            <h3>Cursuri disponibile</h3>
+            <table th:if="${availableCourses.size() &gt; 0}">
+                <tr>
+                    <th>Nume curs</th>
+                    <th>Descriere</th>
+                    <th>Locuri maxime</th>
+                    <th>Actiune</th>
+                </tr>
+                <tr th:each="course : ${availableCourses}">
+                    <td th:text="${course.name}"></td>
+                    <td th:text="${course.description}"></td>
+                    <td th:text="${course.maxStudents}"></td>
+                    <td>
+                        <form action="/student/enroll-form" method="get">
+                            <input name="courseId" th:value="${course.id}" type="hidden"/>
+                            <button type="submit">Inroleaza-te</button>
+                        </form>
+                    </td>
+                </tr>
+            </table>
+            <p th:if="${availableCourses.size() == 0}">
+                Nu există cursuri disponibile
+            </p>
+            <br/><br/>
+            <h3>Cursurile mele</h3>
+            <table th:if="${enrolledCourses.size() &gt; 0}">
+                <tr>
+                    <th>Nume curs</th>
+                    <th>Descriere</th>
+                    <th>Pagina curs</th>
+                    <th>Actiune</th>
+                </tr>
+                <tr th:each="course : ${enrolledCourses}">
+                    <td th:text="${course.name}"></td>
+                    <td th:text="${course.description}"></td>
+                    <td>
+                        <a th:href="@{/student/course/{id}(id=${course.id})}">
+                            Intra in curs
+                        </a>
+                    </td>
+                    <td>
+                        <form action="/student/unenroll" method="post">
+                            <input name="courseId" th:value="${course.id}" type="hidden"/>
+                            <button type="submit">Dezinscrie-te</button>
+                        </form>
+                    </td>
+                </tr>
+            </table>
+            <p th:if="${enrolledCourses.size() == 0}">
+                Nu esti inscris la niciun curs
+            </p>
+            <p style="color:red;" th:if="${session.studentErrorMessage}">
+                <span th:text="${session.studentErrorMessage}"></span>
+            </p>
+
+            <p>Token-uri alocate:
+                <span th:text="${allocatedTokens}">0</span>
+            </p>
+
+            <p>Token-uri folosite:
+                <span th:text="${usedTokens}">0</span>
+            </p>
+
+            <p>Token-uri ramase:
+                <span th:text="${remainingTokens}">0</span>
+            </p>
+
+            <p>Abonamente alocate:
+                <span th:text="${allocatedSubscriptions}">0</span>
+            </p>
+
+            <p>Abonamente utilizate:
+                <span th:text="${usedSubscriptions}">0</span>
+            </p>
+
+            <br/>
+            <a href="/login">Logout</a>
+        </div>
+    </main>
+</div>
+<script defer="True" src="/js/site.js"></script>
+</body>
+</html>

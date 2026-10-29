@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Audit</title>
+    <link href="/css/style.css" rel="stylesheet"/>
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
+</head>
+<body>
+<div class="app-layout">
+    <aside class="sidebar"><a class="brand" href="/login"><span class="brand-logo">📚</span><span>Resurse Digitale<small>Campus digital</small></span></a><span
+            class="nav-label">NAVIGARE</span>
+        <nav class="nav-links"><a class="" th:if="${session.user != null and session.user.role == 'STUDENT'}"
+                                  href="/student"><span class="ico">🎓</span>Student</a><a class=""
+                                                                                          th:if="${session.user != null and session.user.role == 'PROFESOR'}"
+                                                                                          href="/profesor"><span
+                class="ico">📚</span>Profesor</a><a class=""
+                                                   th:if="${session.user != null and session.user.role == 'ADMIN'}"
+                                                   href="/admin"><span class="ico">▦</span>Administrare</a><a class=""
+                                                                                                              th:if="${session.user != null and session.user.role == 'ADMIN'}"
+                                                                                                              href="/admin/university-stats"><span
+                class="ico">📈</span>Statistici</a><a class="active"
+                                                     th:if="${session.user != null and session.user.role == 'AUDIT'}"
+                                                     href="/audit"><span class="ico">◷</span>Audit</a></nav>
+        <div class="sidebar-foot">Organizează. Învață. Evoluează.<a href="/login">↗ Schimbă contul</a></div>
+    </aside>
+    <main class="main">
+        <header class="topbar">
+            <div>
+                <button aria-label="Deschide meniul" class="mobile-toggle" type="button">☰</button>
+                <span class="breadcrumb">Campus digital / Panou de control</span></div>
+            <div class="topbar-right"><span>Platformă universitară</span>
+                <div class="avatar">RD</div>
+            </div>
+        </header>
+        <section class="page-hero">
+            <div><span class="eyebrow">RESURSE DIGITALE</span>
+                <h1>Jurnal de activitate</h1>
+                <p>Urmărește acțiunile efectuate în platformă.</p></div>
+            <span aria-hidden="true" class="hero-icon">✦</span></section>
+        <div class="container panel">
+            <h2>Pagina Audit</h2>
+            <h3>Jurnal acțiuni utilizatori</h3>
+            <table border="1" th:if="${logs.size() &gt; 0}">
+                <tr>
+                    <th>ID User</th>
+                    <th>Rol</th>
+                    <th>Acțiune</th>
+                    <th>Detalii</th>
+                    <th>Data</th>
+                </tr>
+                <tr th:each="log : ${logs}">
+                    <td th:text="${log.userId}"></td>
+                    <td th:text="${log.userRole}"></td>
+                    <td th:text="${log.action}"></td>
+                    <td th:text="${log.details}"></td>
+                    <td th:text="${log.timestamp}"></td>
+                </tr>
+            </table>
+            <p th:if="${logs.size() == 0}">
+                Nu există acțiuni jurnalizate.
+            </p>
+            <br/>
+            <a href="/login">Logout</a>
+        </div>
+    </main>
+</div>
+<script defer="True" src="/js/site.js"></script>
+</body>
+</html>

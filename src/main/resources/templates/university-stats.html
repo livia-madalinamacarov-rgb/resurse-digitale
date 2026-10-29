@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Statistici Universitate</title>
+    <link href="/css/style.css" rel="stylesheet"/>
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
+</head>
+<body>
+<div class="app-layout">
+    <aside class="sidebar"><a class="brand" href="/login"><span class="brand-logo">📚</span><span>Resurse Digitale<small>Campus digital</small></span></a><span
+            class="nav-label">NAVIGARE</span>
+        <nav class="nav-links"><a class="" th:if="${session.user != null and session.user.role == 'STUDENT'}"
+                                  href="/student"><span class="ico">🎓</span>Student</a><a class=""
+                                                                                          th:if="${session.user != null and session.user.role == 'PROFESOR'}"
+                                                                                          href="/profesor"><span
+                class="ico">📚</span>Profesor</a><a class=""
+                                                   th:if="${session.user != null and session.user.role == 'ADMIN'}"
+                                                   href="/admin"><span class="ico">▦</span>Administrare</a><a
+                class="active" th:if="${session.user != null and session.user.role == 'ADMIN'}"
+                href="/admin/university-stats"><span class="ico">📈</span>Statistici</a><a class=""
+                                                                                          th:if="${session.user != null and session.user.role == 'AUDIT'}"
+                                                                                          href="/audit"><span
+                class="ico">◷</span>Audit</a></nav>
+        <div class="sidebar-foot">Organizează. Învață. Evoluează.<a href="/login">↗ Schimbă contul</a></div>
+    </aside>
+    <main class="main">
+        <header class="topbar">
+            <div>
+                <button aria-label="Deschide meniul" class="mobile-toggle" type="button">☰</button>
+                <span class="breadcrumb">Campus digital / Panou de control</span></div>
+            <div class="topbar-right"><span>Platformă universitară</span>
+                <div class="avatar">RD</div>
+            </div>
+        </header>
+        <section class="page-hero">
+            <div><span class="eyebrow">RESURSE DIGITALE</span>
+                <h1>Statistici universitate</h1>
+                <p>Un spațiu unitar pentru activitatea universitară.</p></div>
+            <span aria-hidden="true" class="hero-icon">✦</span></section>
+        <div class="container panel">
+            <h2>Statistici Universitate</h2>
+            <h3>General</h3>
+            <p>Total studenti: <span th:text="${totalStudents}"></span></p>
+            <p>Total cursuri: <span th:text="${totalCourses}"></span></p>
+            <p>Total inscrieri: <span th:text="${totalEnrollments}"></span></p>
+            <h3>Resurse totale</h3>
+            <p>Total token-uri ramase: <span th:text="${totalTokensRemaining}"></span></p>
+            <p>Total cereri ajutor ramase: <span th:text="${totalHelpRemaining}"></span></p>
+            <br/>
+            <a href="/admin">Inapoi la admin</a>
+        </div>
+    </main>
+</div>
+<script defer="True" src="/js/site.js"></script>
+</body>
+</html>

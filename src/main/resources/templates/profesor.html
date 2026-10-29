@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Profesor</title>
+    <link href="/css/style.css" rel="stylesheet"/>
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
+</head>
+<body>
+<div class="app-layout">
+    <aside class="sidebar"><a class="brand" href="/login"><span class="brand-logo">📚</span><span>Resurse Digitale<small>Campus digital</small></span></a><span
+            class="nav-label">NAVIGARE</span>
+        <nav class="nav-links"><a class="" th:if="${session.user != null and session.user.role == 'STUDENT'}"
+                                  href="/student"><span class="ico">🎓</span>Student</a><a class="active"
+                                                                                          th:if="${session.user != null and session.user.role == 'PROFESOR'}"
+                                                                                          href="/profesor"><span
+                class="ico">📚</span>Profesor</a><a class=""
+                                                   th:if="${session.user != null and session.user.role == 'ADMIN'}"
+                                                   href="/admin"><span class="ico">▦</span>Administrare</a><a class=""
+                                                                                                              th:if="${session.user != null and session.user.role == 'ADMIN'}"
+                                                                                                              href="/admin/university-stats"><span
+                class="ico">📈</span>Statistici</a><a class=""
+                                                     th:if="${session.user != null and session.user.role == 'AUDIT'}"
+                                                     href="/audit"><span class="ico">◷</span>Audit</a></nav>
+        <div class="sidebar-foot">Organizează. Învață. Evoluează.<a href="/login">↗ Schimbă contul</a></div>
+    </aside>
+    <main class="main">
+        <header class="topbar">
+            <div>
+                <button aria-label="Deschide meniul" class="mobile-toggle" type="button">☰</button>
+                <span class="breadcrumb">Campus digital / Panou de control</span></div>
+            <div class="topbar-right"><span>Platformă universitară</span>
+                <div class="avatar">RD</div>
+            </div>
+        </header>
+        <section class="page-hero">
+            <div><span class="eyebrow">RESURSE DIGITALE</span>
+                <h1>Spațiul profesorului</h1>
+                <p>Organizează cursurile și sprijină activitatea studenților.</p></div>
+            <span aria-hidden="true" class="hero-icon">✦</span></section>
+        <div class="container panel">
+            <p style="color:green;" th:if="${session.successMessage}">
+                <span th:text="${session.successMessage}"></span>
+            </p>
+            <p style="color:red;" th:if="${session.profesorErrorMessage}">
+                <span th:text="${session.profesorErrorMessage}"></span>
+            </p>
+            <h2>Pagina Profesor</h2>
+            <!-- 🔹 CURSURILE PROFESORULUI -->
+            <h3>Cursurile mele</h3>
+            <ul>
+                <li th:each="course : ${courses}">
+                    <span th:text="${course.name}"></span>
+                </li>
+            </ul>
+            <!-- 🔹 UPLOAD MATERIALE -->
+            <h3>Incarca material</h3>
+            <form action="/profesor/upload-material" enctype="multipart/form-data" method="post">
+                <select name="courseId" required="">
+                    <option value="">Alege curs</option>
+                    <option th:each="course : ${courses}" th:text="${course.name}" th:value="${course.id}">
+                    </option>
+                </select>
+                <br/><br/>
+                <input name="title" placeholder="Titlu material" required="" type="text"/>
+                <br/><br/>
+                <input name="file" required="" type="file"/>
+                <br/><br/>
+                <button type="submit">Incarca material</button>
+            </form>
+            <!-- 🔹 TEME STUDENTI -->
+            <h3>Teme incarcate de studenti</h3>
+            <table border="1" th:if="${homeworks.size() &gt; 0}">
+                <tr>
+                    <th>ID Student</th>
+                    <th>ID Curs</th>
+                    <th>Fisier</th>
+                </tr>
+                <tr th:each="hw : ${homeworks}">
+                    <td th:text="${hw.studentId}"></td>
+                    <td th:text="${hw.courseId}"></td>
+                    <td>
+                        <a target="_blank" th:href="@{'/homework/' + ${hw.fileName}}">
+                            Deschide tema
+                        </a>
+                    </td>
+                </tr>
+            </table>
+            <h3>Cereri resurse suplimentare</h3>
+            <p class="status-error" th:if="${session.profesorErrorMessage}"
+               th:text="${session.profesorErrorMessage}"></p>
+            <table th:if="${requests.size() &gt; 0}">
+                <tr>
+                    <th>ID Student</th>
+                    <th>ID Curs</th>
+                    <th>Token-uri cerute</th>
+                    <th>Cereri ajutor</th>
+                    <th>Actiune</th>
+                </tr>
+                <tr th:each="req : ${requests}">
+                    <td th:text="${req.studentId}"></td>
+                    <td th:text="${req.courseId}"></td>
+                    <!-- 🔥 ASTEA LIPSEAU -->
+                    <td th:text="${req.requestedTokens}"></td>
+                    <td th:text="${req.requestedHelpRequests}"></td>
+                    <td>
+                        <form action="/profesor/approve-request" method="post">
+                            <input name="requestId" th:value="${req.id}" type="hidden"/>
+                            <button type="submit">Aproba cererea</button>
+                        </form>
+                    </td>
+                </tr>
+            </table>
+            <h3>Cere token-uri suplimentare</h3>
+            <form action="/profesor/request-resources" method="post">
+                <input name="tokens" placeholder="Token-uri cerute" required="" type="number"/>
+                <button type="submit">Trimite cerere</button>
+            </form>
+            <h3>Token-uri disponibile</h3>
+            <div th:if="${profResource != null}">
+                <p>Token-uri: <span th:text="${profResource.tokens}"></span></p>
+            </div>
+            <p th:if="${profResource == null}">
+                Nu ai token-uri alocate.
+            </p>
+            <p th:if="${requests.size() == 0}">
+                Nu exista cereri de resurse.
+            </p>
+            <p th:if="${homeworks.size() == 0}">
+                Nu exista teme incarcate.
+            </p>
+            <br/>
+            <h3>Creeaza curs</h3>
+            <form action="/profesor/create-course" method="post">
+                <input name="name" placeholder="Nume curs" required="" type="text"/>
+                <br/><br/>
+                <input name="description" placeholder="Descriere" required="" type="text"/>
+                <br/><br/>
+                <input name="maxStudents" placeholder="Nr maxim studenti" required="" type="number"/>
+                <br/><br/>
+                <input name="tokensPerStudent" placeholder="Token-uri per student" required="" type="number"/>
+                <br/><br/>
+                <input name="subscriptionsPerStudent" placeholder="Abonamente per student" required="" type="number"/>
+                <br/><br/>
+                <button type="submit">Creeaza curs</button>
+            </form>
+            <a href="/login">Logout</a>
+        </div>
+    </main>
+</div>
+<script defer="True" src="/js/site.js"></script>
+</body>
+</html>

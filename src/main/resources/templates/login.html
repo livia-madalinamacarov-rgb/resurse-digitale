@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Login</title>
+    <link href="/css/style.css" rel="stylesheet"/>
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
+</head>
+<body>
+<div class="auth-page">
+    <aside class="auth-aside"><a class="brand" href="/login"><span
+            class="brand-logo">📚</span><span>Resurse Digitale<small>Campus digital</small></span></a>
+        <div class="auth-promo"><h1>Educația ta,<br/>mai conectată.</h1>
+            <p>Cursuri, resurse și instrumente digitale, toate într-un singur loc.</p></div>
+        <small class="auth-caption">Platformă pentru comunitatea universitară</small></aside>
+    <main class="auth-main">
+        <div class="auth-card">
+            <div class="auth-tag">BUN VENIT</div>
+            <h2>Autentificare</h2>
+            <p class="hint">Intră în cont pentru a continua.</p>
+
+            <p class="message" style="color:red" th:if="${errorMessage}" th:text="${errorMessage}"></p>
+
+            <form action="/login"
+                  class="auth-form"
+                  method="post"
+                  autocomplete="off">
+
+                <input type="email"
+                       name="email"
+                       placeholder="Email"
+                       autocomplete="off"
+                       required>
+
+                <input type="password"
+                       name="password"
+                       placeholder="Parola"
+                       autocomplete="off"
+                       required>
+
+                <button type="submit">Login</button>
+
+            </form>
+
+            <div class="links">
+                <a href="/register">Nu ai cont? Inregistrare</a>
+                <a href="/reset-password">Ai uitat parola?</a>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>
